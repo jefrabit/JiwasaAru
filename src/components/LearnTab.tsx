@@ -102,7 +102,14 @@ export default function LearnTab() {
 
       if (progressError) throw progressError;
 
-      setLessons(lessonsData || []);
+      const modifiedLessons = (lessonsData || []).map(lesson => {
+        if (lesson.title === 'Saludos Básicos') {
+          return { ...lesson, title: 'Desaguadero Marka' };
+        }
+        return lesson;
+      });
+
+      setLessons(modifiedLessons);
       setProgress(progressData || []);
     } catch (error) {
       console.error('Error fetching data:', error);
