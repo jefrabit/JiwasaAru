@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { supabase, Lesson, UserProgress } from '../lib/supabase';
 import { Heart, Lock } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
-import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMap, Polyline } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -53,6 +53,13 @@ const LEVEL_COORDINATES = [
   { name: "Yunguyo Marka", position: [-16.2463, -69.09132] as [number, number] }
 ];
 
+const DESAGUADERO_SUBLEVELS = [
+  { name: "Saludos", position: [-16.567064, -69.030983] as [number, number], icon: "Hand" },
+  { name: "Colores", position: [-16.568442, -69.034229] as [number, number], icon: "Palette" },
+  { name: "Animales", position: [-16.567254, -69.035736] as [number, number], icon: "Cat" },
+  { name: "Repaso", position: [-16.560181, -69.039620] as [number, number], icon: "Star" }
+];
+
 function FlyToBounds({ bounds }: { bounds: L.LatLngBoundsExpression | null }) {
   const map = useMap();
 
@@ -74,14 +81,7 @@ export default function LearnTab() {
   const [progress, setProgress] = useState<UserProgress[]>([]);
   const [loading, setLoading] = useState(true);
   const [targetBounds, setTargetBounds] = useState<L.LatLngBoundsExpression | null>(null);
-
-  // ... (rest of the component)
-
-
-
-  // ... (rest of the component)
-
-
+  const [isDesaguaderoExpanded, setIsDesaguaderoExpanded] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -191,19 +191,6 @@ export default function LearnTab() {
 
   const isLessonUnlocked = (lesson: Lesson) => {
     return true; // Temporarily unlocked for testing
-    /*
-    if (lesson.order_index === 1) return true;
-  
-    const previousLesson = lessons.find(
-      (l) => l.order_index === lesson.order_index - 1
-    );
-    if (!previousLesson) return false;
-  
-    const previousProgress = progress.find(
-      (p) => p.lesson_id === previousLesson.id
-    );
-    return previousProgress?.completed || false;
-    */
   };
 
   const getLessonIcon = (iconName: string) => {
@@ -213,15 +200,8 @@ export default function LearnTab() {
     return Icon || LucideIcons.BookOpen;
   };
 
-  const createCustomMarkerIcon = (lesson: Lesson, isUnlocked: boolean, isCompleted: boolean, stars: number) => {
-    const Icon = getLessonIcon(lesson.icon);
-
-    // Define colors based on status
-    // Note: Tailwind dynamic classes might need safelisting or full mapping
-
-    // Since we can't easily use dynamic tailwind classes in renderToStaticMarkup if they aren't safelisted, 
-    // let's use inline styles or standard colors for simplicity in this generated HTML.
-    // However, for the purpose of this task, we'll try to map a few common colors or use style attributes.
+  const createCustomMarkerIcon = (title: string, iconName: string, isUnlocked: boolean, isCompleted: boolean, stars: number, color: string = 'blue') => {
+    const Icon = getLessonIcon(iconName);
 
     const colorMap: Record<string, string> = {
       blue: '#3b82f6',
@@ -232,7 +212,7 @@ export default function LearnTab() {
       gray: '#9ca3af'
     };
 
-    const bgColor = isCompleted ? colorMap['yellow'] : (isUnlocked ? (colorMap[lesson.color] || colorMap['blue']) : colorMap['gray']);
+    const bgColor = isCompleted ? colorMap['yellow'] : (isUnlocked ? (colorMap[color] || colorMap['blue']) : colorMap['gray']);
 
     const iconMarkup = renderToStaticMarkup(
       <div className="relative flex flex-col items-center justify-center">
@@ -254,14 +234,14 @@ export default function LearnTab() {
           </div>
         )}
         <div className="mt-1 bg-white/90 px-2 py-1 rounded text-xs font-bold shadow-md whitespace-nowrap">
-          {lesson.title}
+          {title}
         </div>
       </div>
     );
 
     return L.divIcon({
       html: iconMarkup,
-      className: 'custom-marker-icon', // We'll need to ensure this class doesn't interfere
+      className: 'custom-marker-icon',
       iconSize: [80, 100],
       iconAnchor: [40, 50]
     });
@@ -294,10 +274,14 @@ export default function LearnTab() {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
+
+          {/* Main Level Markers */}
           {lessons.map((lesson, idx) => {
-            // Map lesson to a coordinate if available
             const coordinate = LEVEL_COORDINATES[idx];
-            if (!coordinate) return null; // Or handle overflow lessons differently
+            if (!coordinate) return null;
+
+            // Hide Desaguadero Marka if expanded
+            if (idx === 0 && isDesaguaderoExpanded) return null;
 
             const lessonProgress = progress.find((p) => p.lesson_id === lesson.id);
             const isUnlocked = isLessonUnlocked(lesson);
@@ -308,20 +292,20 @@ export default function LearnTab() {
               <Marker
                 key={lesson.id}
                 position={coordinate.position}
-                icon={createCustomMarkerIcon(lesson, isUnlocked, isCompleted, stars)}
+                icon={createCustomMarkerIcon(lesson.title, lesson.icon, isUnlocked, isCompleted, stars, lesson.color)}
                 eventHandlers={{
                   click: () => {
                     if (isUnlocked) {
-                      if (idx === 0) { // Assuming Desaguadero/Saludos Básicos is the first one
+                      if (idx === 0) { // Desaguadero Marka
                         setTargetBounds(DESAGUADERO_BOUNDS);
-                        setTimeout(() => handleLessonClick(lesson), 2000);
-                      } else if (idx === 1) { // Juli / Numeros
+                        setIsDesaguaderoExpanded(true);
+                      } else if (idx === 1) { // Juli Marka
                         setTargetBounds(NUMEROS_BOUNDS);
                         setTimeout(() => handleLessonClick(lesson), 2000);
-                      } else if (idx === 2) { // Ilave / Colores
+                      } else if (idx === 2) { // Ilave Marka
                         setTargetBounds(COLORES_BOUNDS);
                         setTimeout(() => handleLessonClick(lesson), 2000);
-                      } else if (idx === 3) { // Pomata / Familia
+                      } else if (idx === 3) { // Yunguyo Marka
                         setTargetBounds(FAMILIA_BOUNDS);
                         setTimeout(() => handleLessonClick(lesson), 2000);
                       } else {
@@ -332,10 +316,33 @@ export default function LearnTab() {
                     }
                   }
                 }}
-              >
-              </Marker>
+              />
             );
           })}
+
+          {/* Desaguadero Sub-levels */}
+          {isDesaguaderoExpanded && (
+            <>
+              {DESAGUADERO_SUBLEVELS.map((subLevel, idx) => (
+                <Marker
+                  key={`sub-${idx}`}
+                  position={subLevel.position}
+                  icon={createCustomMarkerIcon(subLevel.name, subLevel.icon, true, false, 0, 'green')}
+                  eventHandlers={{
+                    click: () => {
+                      alert(`Has seleccionado el nivel: ${subLevel.name}`);
+                      // Here you would link to the specific lesson logic
+                    }
+                  }}
+                />
+              ))}
+              <Polyline
+                positions={DESAGUADERO_SUBLEVELS.map(l => l.position)}
+                pathOptions={{ color: 'white', weight: 4, dashArray: '10, 10', opacity: 0.8 }}
+              />
+            </>
+          )}
+
         </MapContainer>
       </div>
     </div>
