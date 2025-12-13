@@ -61,6 +61,13 @@ const DESAGUADERO_SUBLEVELS = [
   { name: "Repaso", position: [-16.560181, -69.039620] as [number, number], icon: "Star" }
 ];
 
+const YUNGUYO_SUBLEVELS = [
+  { name: "Nivel A", position: [-16.246933, -69.088267] as [number, number], icon: "Zap" },
+  { name: "Nivel B", position: [-16.243292, -69.089515] as [number, number], icon: "Flag" },
+  { name: "Nivel C", position: [-16.244309, -69.092672] as [number, number], icon: "Target" },
+  { name: "Nivel D", position: [-16.246979, -69.094423] as [number, number], icon: "Trophy" }
+];
+
 function FlyToBounds({ bounds }: { bounds: L.LatLngBoundsExpression | null }) {
   const map = useMap();
 
@@ -87,6 +94,7 @@ export default function LearnTab() {
   const [loading, setLoading] = useState(true);
   const [targetBounds, setTargetBounds] = useState<L.LatLngBoundsExpression | null>(null);
   const [isDesaguaderoExpanded, setIsDesaguaderoExpanded] = useState(false);
+  const [isYunguyoExpanded, setIsYunguyoExpanded] = useState(false);
   const [showCulturaCard, setShowCulturaCard] = useState(true);
   const [activeLesson, setActiveLesson] = useState<string | null>(null);
 
@@ -305,6 +313,8 @@ export default function LearnTab() {
 
             // Hide Desaguadero Marka if expanded
             if (idx === 0 && isDesaguaderoExpanded) return null;
+            // Hide Yunguyo Marka if expanded
+            if (idx === 3 && isYunguyoExpanded) return null;
 
             const lessonProgress = progress.find((p) => p.lesson_id === lesson.id);
             const isUnlocked = isLessonUnlocked(lesson);
@@ -330,7 +340,7 @@ export default function LearnTab() {
                         setTimeout(() => handleLessonClick(lesson), 2000);
                       } else if (idx === 3) { // Yunguyo Marka
                         setTargetBounds(FAMILIA_BOUNDS);
-                        setTimeout(() => handleLessonClick(lesson), 2000);
+                        setIsYunguyoExpanded(true);
                       } else {
                         handleLessonClick(lesson);
                       }
@@ -364,6 +374,28 @@ export default function LearnTab() {
               ))}
               <Polyline
                 positions={DESAGUADERO_SUBLEVELS.map(l => l.position)}
+                pathOptions={{ color: 'white', weight: 4, dashArray: '10, 10', opacity: 0.8 }}
+              />
+            </>
+          )}
+
+          {/* Yunguyo Sub-levels */}
+          {isYunguyoExpanded && (
+            <>
+              {YUNGUYO_SUBLEVELS.map((subLevel, idx) => (
+                <Marker
+                  key={`yunguyo-sub-${idx}`}
+                  position={subLevel.position}
+                  icon={createCustomMarkerIcon(subLevel.name, subLevel.icon, true, false, 0, 'purple')}
+                  eventHandlers={{
+                    click: () => {
+                      alert(`Has seleccionado el nivel: ${subLevel.name}`);
+                    }
+                  }}
+                />
+              ))}
+              <Polyline
+                positions={YUNGUYO_SUBLEVELS.map(l => l.position)}
                 pathOptions={{ color: 'white', weight: 4, dashArray: '10, 10', opacity: 0.8 }}
               />
             </>
