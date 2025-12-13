@@ -31,7 +31,7 @@ export default function TaboTab() {
       const { data, error } = await supabase
         .from('quiz_questions')
         .select('*')
-        .order('RANDOM()')
+
         .limit(5);
 
       if (error) throw error;
@@ -221,12 +221,12 @@ export default function TaboTab() {
                     <div className="flex items-center space-x-4">
                       <div
                         className={`w-8 h-8 rounded-full flex items-center justify-center ${answered
-                            ? option.key === currentQuestion.correct_answer
-                              ? 'bg-green-500'
-                              : option.key === selectedAnswer
-                                ? 'bg-red-500'
-                                : 'bg-gray-300'
-                            : 'bg-blue-500'
+                          ? option.key === currentQuestion.correct_answer
+                            ? 'bg-green-500'
+                            : option.key === selectedAnswer
+                              ? 'bg-red-500'
+                              : 'bg-gray-300'
+                          : 'bg-blue-500'
                           } text-white font-bold`}
                       >
                         {option.key}
