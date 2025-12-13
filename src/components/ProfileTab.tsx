@@ -1,36 +1,8 @@
-import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { supabase, UserProgress } from '../lib/supabase';
-import { Calendar, Award, Target, Star, Heart } from 'lucide-react';
+import { Calendar, Award, Heart } from 'lucide-react';
 
 export default function ProfileTab() {
   const { profile, signOut } = useAuth();
-
-  const [totalStars, setTotalStars] = useState(0);
-
-  useEffect(() => {
-    fetchStats();
-  }, [profile]);
-
-  const fetchStats = async () => {
-    if (!profile) return;
-
-    try {
-      const { data, error } = await supabase
-        .from('user_progress')
-        .select('*')
-        .eq('user_id', profile.id)
-        .eq('completed', true);
-
-      if (error) throw error;
-
-
-      const stars = data?.reduce((acc: number, curr: UserProgress) => acc + curr.stars, 0) || 0;
-      setTotalStars(stars);
-    } catch (error) {
-      console.error('Error fetching stats:', error);
-    }
-  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -93,16 +65,6 @@ export default function ProfileTab() {
                 <div className="text-3xl font-bold text-gray-800">{profile.level}</div>
               </div>
 
-              <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl p-6">
-                <div className="flex items-center space-x-3 mb-2">
-                  <div className="bg-yellow-500 p-2 rounded-lg">
-                    <Target className="w-5 h-5 text-white" />
-                  </div>
-                  <span className="text-sm font-medium text-gray-600">Experiencia</span>
-                </div>
-                <div className="text-3xl font-bold text-gray-800">{profile.xp}</div>
-              </div>
-
               <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-6">
                 <div className="flex items-center space-x-3 mb-2">
                   <div className="bg-red-500 p-2 rounded-lg">
@@ -111,16 +73,6 @@ export default function ProfileTab() {
                   <span className="text-sm font-medium text-gray-600">Vidas</span>
                 </div>
                 <div className="text-3xl font-bold text-gray-800">{profile.lives} / 5</div>
-              </div>
-
-              <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6">
-                <div className="flex items-center space-x-3 mb-2">
-                  <div className="bg-purple-500 p-2 rounded-lg">
-                    <Star className="w-5 h-5 text-white" />
-                  </div>
-                  <span className="text-sm font-medium text-gray-600">Estrellas</span>
-                </div>
-                <div className="text-3xl font-bold text-gray-800">{totalStars}</div>
               </div>
             </div>
 
@@ -144,8 +96,6 @@ export default function ProfileTab() {
                 </div>
               </div>
             </div>
-
-
           </div>
         </div>
       </div>
