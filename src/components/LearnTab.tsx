@@ -32,8 +32,8 @@ const DESAGUADERO_BOUNDS: L.LatLngBoundsExpression = [
 ];
 
 const FAMILIA_BOUNDS: L.LatLngBoundsExpression = [
-  [-16.27705, -69.29704], // Southwest
-  [-16.27024, -69.29062]  // Northeast
+  [-16.25551, -69.10233], // Southwest
+  [-16.23709, -69.08031]  // Northeast
 ];
 
 const NUMEROS_BOUNDS: L.LatLngBoundsExpression = [
@@ -50,7 +50,7 @@ const LEVEL_COORDINATES = [
   { name: "Desaguadero", position: [-16.56652, -69.03727] as [number, number] },
   { name: "Juli", position: [-16.21550, -69.46046] as [number, number] },
   { name: "Ilave", position: [-16.08763, -69.63864] as [number, number] },
-  { name: "Pomata", position: [-16.273655, -69.293153] as [number, number] }
+  { name: "Familia", position: [-16.2463, -69.09132] as [number, number] }
 ];
 
 function FlyToBounds({ bounds }: { bounds: L.LatLngBoundsExpression | null }) {
