@@ -61,6 +61,8 @@ export default function LessonView({ lessonTitle, onComplete, onClose }: LessonV
     const [score, setScore] = useState(0);
     const [showResult, setShowResult] = useState(false);
 
+    const [draggedOption, setDraggedOption] = useState<string | null>(null);
+
     const currentQuestion = SALUDOS_QUESTIONS[currentQuestionIndex];
     const isLastQuestion = currentQuestionIndex === SALUDOS_QUESTIONS.length - 1;
 
@@ -70,6 +72,22 @@ export default function LessonView({ lessonTitle, onComplete, onClose }: LessonV
 
     const handleMatching = (left: string, right: string) => {
         setMatchingPairs(prev => ({ ...prev, [left]: right }));
+    };
+
+    const handleDragStart = (option: string) => {
+        setDraggedOption(option);
+    };
+
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+    };
+
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        if (draggedOption) {
+            setSelectedAnswer(draggedOption);
+            setDraggedOption(null);
+        }
     };
 
     const checkAnswer = () => {
@@ -94,6 +112,7 @@ export default function LessonView({ lessonTitle, onComplete, onClose }: LessonV
             setSelectedAnswer(null);
             setMatchingPairs({});
             setIsCorrect(null);
+            setDraggedOption(null);
         }
     };
 
@@ -169,24 +188,47 @@ export default function LessonView({ lessonTitle, onComplete, onClose }: LessonV
                 )}
 
                 {currentQuestion.type === 'completion' && (
-                    <div className="w-full space-y-6">
-                        <div className="flex flex-wrap gap-2 justify-center">
+                    <div className="w-full space-y-8">
+                        <div className="flex flex-wrap gap-4 justify-center min-h-[60px]">
                             {currentQuestion.options?.map(opt => (
-                                <button
+                                <div
                                     key={opt}
-                                    onClick={() => handleAnswer(opt)}
-                                    disabled={isCorrect !== null}
-                                    className={`px-4 py-2 rounded-lg border-2 font-bold ${selectedAnswer === opt
-                                            ? 'border-blue-500 bg-blue-100 text-blue-700'
-                                            : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                                    draggable={isCorrect === null && selectedAnswer !== opt}
+                                    onDragStart={() => handleDragStart(opt)}
+                                    className={`px-6 py-3 rounded-xl font-bold text-lg shadow-sm transition-all cursor-grab active:cursor-grabbing ${selectedAnswer === opt
+                                            ? 'opacity-50 bg-gray-100 text-gray-400 border-2 border-dashed border-gray-300'
+                                            : 'bg-white text-blue-600 border-2 border-blue-100 hover:border-blue-300 hover:shadow-md'
                                         }`}
                                 >
                                     {opt}
-                                </button>
+                                </div>
                             ))}
                         </div>
-                        <div className="p-6 bg-white rounded-xl border-2 border-gray-200 text-center text-xl">
-                            {currentQuestion.question.replace('______', selectedAnswer ? ` ${selectedAnswer} ` : ' ______ ')}
+
+                        <div className="p-8 bg-white rounded-2xl border-2 border-gray-100 shadow-sm text-center text-2xl font-medium leading-relaxed">
+                            {(() => {
+                                const parts = currentQuestion.question.split('______');
+                                return (
+                                    <div className="flex items-center justify-center flex-wrap gap-2">
+                                        <span>{parts[0]}</span>
+                                        <div
+                                            onDragOver={handleDragOver}
+                                            onDrop={handleDrop}
+                                            className={`min-w-[120px] h-12 rounded-lg border-2 flex items-center justify-center px-4 transition-all ${selectedAnswer
+                                                    ? isCorrect === null
+                                                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                                                        : isCorrect
+                                                            ? 'border-green-500 bg-green-50 text-green-700'
+                                                            : 'border-red-500 bg-red-50 text-red-700'
+                                                    : 'border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 hover:border-gray-400'
+                                                }`}
+                                        >
+                                            {selectedAnswer || <span className="text-gray-400 text-sm">Arrastra aquí</span>}
+                                        </div>
+                                        <span>{parts[1]}</span>
+                                    </div>
+                                );
+                            })()}
                         </div>
                     </div>
                 )}
