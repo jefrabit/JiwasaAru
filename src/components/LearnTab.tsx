@@ -47,10 +47,10 @@ const COLORES_BOUNDS: L.LatLngBoundsExpression = [
 ];
 
 const LEVEL_COORDINATES = [
-  { name: "Desaguadero", position: [-16.56652, -69.03727] as [number, number] },
-  { name: "Juli", position: [-16.21550, -69.46046] as [number, number] },
-  { name: "Ilave", position: [-16.08763, -69.63864] as [number, number] },
-  { name: "Familia", position: [-16.2463, -69.09132] as [number, number] }
+  { name: "Desaguadero Marka", position: [-16.56652, -69.03727] as [number, number] },
+  { name: "Juli Marka", position: [-16.21550, -69.46046] as [number, number] },
+  { name: "Ilave Marka", position: [-16.08763, -69.63864] as [number, number] },
+  { name: "Yunguyo Marka", position: [-16.2463, -69.09132] as [number, number] }
 ];
 
 function FlyToBounds({ bounds }: { bounds: L.LatLngBoundsExpression | null }) {
@@ -105,6 +105,15 @@ export default function LearnTab() {
       const modifiedLessons = (lessonsData || []).map(lesson => {
         if (lesson.title === 'Saludos Básicos') {
           return { ...lesson, title: 'Desaguadero Marka' };
+        }
+        if (lesson.title === 'Familia') {
+          return { ...lesson, title: 'Yunguyo Marka' };
+        }
+        if (lesson.title === 'Numeros 1-10' || lesson.title === 'Números 1-10') {
+          return { ...lesson, title: 'Juli Marka' };
+        }
+        if (lesson.title === 'Colores') {
+          return { ...lesson, title: 'Ilave Marka' };
         }
         return lesson;
       });
@@ -184,12 +193,12 @@ export default function LearnTab() {
     return true; // Temporarily unlocked for testing
     /*
     if (lesson.order_index === 1) return true;
-
+  
     const previousLesson = lessons.find(
       (l) => l.order_index === lesson.order_index - 1
     );
     if (!previousLesson) return false;
-
+  
     const previousProgress = progress.find(
       (p) => p.lesson_id === previousLesson.id
     );
