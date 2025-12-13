@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Check, RefreshCw } from 'lucide-react';
 
-export type QuestionType = 'multiple-choice' | 'completion' | 'matching' | 'true-false';
+export type QuestionType = 'multiple-choice' | 'completion' | 'matching' | 'true-false' | 'text-input';
 
 export interface Question {
     id: string;
@@ -50,6 +50,12 @@ const SALUDOS_QUESTIONS: Question[] = [
             { left: 'Jikisiñkama', right: 'Hasta luego' }
         ],
         correctAnswer: 'matching-check' // Special handling for matching
+    },
+    {
+        id: '5',
+        type: 'text-input',
+        question: 'Escribe la palabra que falta: "______" (Bien)',
+        correctAnswer: 'Waliki'
     }
 ];
 
@@ -170,6 +176,12 @@ export default function LessonView({ lessonTitle, onComplete, onClose }: LessonV
             });
 
             correct = allCorrect && connections.length === currentQuestion.pairs.length;
+        } else if (currentQuestion.type === 'text-input') {
+            if (!selectedAnswer) {
+                correct = false;
+            } else {
+                correct = selectedAnswer.trim().toLowerCase() === (currentQuestion.correctAnswer as string).toLowerCase();
+            }
         } else {
             correct = selectedAnswer === currentQuestion.correctAnswer;
         }
@@ -251,12 +263,12 @@ export default function LessonView({ lessonTitle, onComplete, onClose }: LessonV
                                 onClick={() => handleAnswer(option)}
                                 disabled={isCorrect !== null}
                                 className={`p-4 rounded-xl border-2 text-left font-semibold transition-all ${selectedAnswer === option
-                                        ? isCorrect === null
-                                            ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                            : isCorrect && option === currentQuestion.correctAnswer
-                                                ? 'border-green-500 bg-green-50 text-green-700'
-                                                : 'border-red-500 bg-red-50 text-red-700'
-                                        : 'border-gray-200 hover:bg-gray-50 text-gray-700'
+                                    ? isCorrect === null
+                                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                                        : isCorrect && option === currentQuestion.correctAnswer
+                                            ? 'border-green-500 bg-green-50 text-green-700'
+                                            : 'border-red-500 bg-red-50 text-red-700'
+                                    : 'border-gray-200 hover:bg-gray-50 text-gray-700'
                                     }`}
                             >
                                 {option}
@@ -274,8 +286,8 @@ export default function LessonView({ lessonTitle, onComplete, onClose }: LessonV
                                     draggable={isCorrect === null && selectedAnswer !== opt}
                                     onDragStart={() => handleDragStart(opt)}
                                     className={`px-6 py-3 rounded-xl font-bold text-lg shadow-sm transition-all cursor-grab active:cursor-grabbing ${selectedAnswer === opt
-                                            ? 'opacity-50 bg-gray-100 text-gray-400 border-2 border-dashed border-gray-300'
-                                            : 'bg-white text-blue-600 border-2 border-blue-100 hover:border-blue-300 hover:shadow-md'
+                                        ? 'opacity-50 bg-gray-100 text-gray-400 border-2 border-dashed border-gray-300'
+                                        : 'bg-white text-blue-600 border-2 border-blue-100 hover:border-blue-300 hover:shadow-md'
                                         }`}
                                 >
                                     {opt}
@@ -293,12 +305,12 @@ export default function LessonView({ lessonTitle, onComplete, onClose }: LessonV
                                             onDragOver={handleDragOver}
                                             onDrop={handleDrop}
                                             className={`min-w-[120px] h-12 rounded-lg border-2 flex items-center justify-center px-4 transition-all ${selectedAnswer
-                                                    ? isCorrect === null
-                                                        ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                                        : isCorrect
-                                                            ? 'border-green-500 bg-green-50 text-green-700'
-                                                            : 'border-red-500 bg-red-50 text-red-700'
-                                                    : 'border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 hover:border-gray-400'
+                                                ? isCorrect === null
+                                                    ? 'border-blue-500 bg-blue-50 text-blue-700'
+                                                    : isCorrect
+                                                        ? 'border-green-500 bg-green-50 text-green-700'
+                                                        : 'border-red-500 bg-red-50 text-red-700'
+                                                : 'border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 hover:border-gray-400'
                                                 }`}
                                         >
                                             {selectedAnswer || <span className="text-gray-400 text-sm">Arrastra aquí</span>}
@@ -319,12 +331,12 @@ export default function LessonView({ lessonTitle, onComplete, onClose }: LessonV
                                 onClick={() => handleAnswer(val)}
                                 disabled={isCorrect !== null}
                                 className={`p-8 rounded-xl border-2 text-center font-bold text-xl transition-all ${selectedAnswer === val
-                                        ? isCorrect === null
-                                            ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                            : isCorrect && val === currentQuestion.correctAnswer
-                                                ? 'border-green-500 bg-green-50 text-green-700'
-                                                : 'border-red-500 bg-red-50 text-red-700'
-                                        : 'border-gray-200 hover:bg-gray-50 text-gray-700'
+                                    ? isCorrect === null
+                                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                                        : isCorrect && val === currentQuestion.correctAnswer
+                                            ? 'border-green-500 bg-green-50 text-green-700'
+                                            : 'border-red-500 bg-red-50 text-red-700'
+                                    : 'border-gray-200 hover:bg-gray-50 text-gray-700'
                                     }`}
                             >
                                 {val === 'true' ? 'Verdadero' : 'Falso'}
@@ -359,10 +371,10 @@ export default function LessonView({ lessonTitle, onComplete, onClose }: LessonV
                                         ref={el => (leftRefs.current[pair.left] = el)}
                                         onClick={() => handleLeftClick(pair.left)}
                                         className={`p-6 bg-white border-2 rounded-xl font-bold text-gray-700 cursor-pointer transition-all relative z-20 ${selectedLeft === pair.left
-                                                ? 'border-blue-500 bg-blue-50 shadow-md scale-105'
-                                                : connections.some(c => c.left === pair.left)
-                                                    ? 'border-blue-300 bg-blue-50'
-                                                    : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+                                            ? 'border-blue-500 bg-blue-50 shadow-md scale-105'
+                                            : connections.some(c => c.left === pair.left)
+                                                ? 'border-blue-300 bg-blue-50'
+                                                : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
                                             }`}
                                     >
                                         {pair.left}
@@ -378,8 +390,8 @@ export default function LessonView({ lessonTitle, onComplete, onClose }: LessonV
                                         ref={el => (rightRefs.current[pair.right] = el)}
                                         onClick={() => handleRightClick(pair.right)}
                                         className={`p-6 bg-white border-2 rounded-xl font-bold text-gray-700 cursor-pointer transition-all relative z-20 ${connections.some(c => c.right === pair.right)
-                                                ? 'border-blue-300 bg-blue-50'
-                                                : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+                                            ? 'border-blue-300 bg-blue-50'
+                                            : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
                                             }`}
                                     >
                                         {/* Dot connector */}
@@ -391,20 +403,49 @@ export default function LessonView({ lessonTitle, onComplete, onClose }: LessonV
                         </div>
                     </div>
                 )}
+
+                {currentQuestion.type === 'text-input' && (
+                    <div className="w-full max-w-md space-y-6">
+                        <div className="p-8 bg-white rounded-2xl border-2 border-gray-100 shadow-sm text-center text-2xl font-medium leading-relaxed">
+                            {(() => {
+                                const parts = currentQuestion.question.split('______');
+                                return (
+                                    <div className="flex items-center justify-center flex-wrap gap-2">
+                                        <span>{parts[0]}</span>
+                                        <input
+                                            type="text"
+                                            value={selectedAnswer || ''}
+                                            onChange={(e) => handleAnswer(e.target.value)}
+                                            disabled={isCorrect !== null}
+                                            className={`w-32 h-12 rounded-lg border-2 px-4 text-center font-bold focus:outline-none transition-all ${isCorrect === null
+                                                ? 'border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200'
+                                                : isCorrect
+                                                    ? 'border-green-500 bg-green-50 text-green-700'
+                                                    : 'border-red-500 bg-red-50 text-red-700'
+                                                }`}
+                                            placeholder="..."
+                                        />
+                                        <span>{parts[1]}</span>
+                                    </div>
+                                );
+                            })()}
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Footer */}
             <div className={`p-6 border-t-2 ${isCorrect === null
-                    ? 'border-gray-200 bg-white'
-                    : isCorrect
-                        ? 'border-green-500 bg-green-100'
-                        : 'border-red-500 bg-red-100'
+                ? 'border-gray-200 bg-white'
+                : isCorrect
+                    ? 'border-green-500 bg-green-100'
+                    : 'border-red-500 bg-red-100'
                 }`}>
                 <div className="max-w-2xl mx-auto flex items-center justify-between">
                     {isCorrect === null ? (
                         <button
                             onClick={checkAnswer}
-                            disabled={!selectedAnswer && (currentQuestion.type !== 'matching' || connections.length === 0)}
+                            disabled={!selectedAnswer && (currentQuestion.type !== 'matching' || connections.length === 0) && currentQuestion.type !== 'text-input'}
                             className="w-full py-3 bg-green-500 text-white rounded-xl font-bold hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition"
                         >
                             Comprobar
