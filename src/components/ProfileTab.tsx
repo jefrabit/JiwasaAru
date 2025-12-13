@@ -4,13 +4,13 @@ import { supabase, UserProgress } from '../lib/supabase';
 import { Calendar, Award, Target, Star, Heart } from 'lucide-react';
 
 export default function ProfileTab() {
-  const { profile } = useAuth();
+  const { profile, signOut } = useAuth();
   const [completedLessons, setCompletedLessons] = useState(0);
   const [totalStars, setTotalStars] = useState(0);
 
   useEffect(() => {
     fetchStats();
-  }, []);
+  }, [profile]);
 
   const fetchStats = async () => {
     if (!profile) return;
@@ -43,8 +43,14 @@ export default function ProfileTab() {
 
   if (!profile) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-gray-600 text-lg">Cargando perfil...</div>
+      <div className="flex flex-col items-center justify-center h-screen space-y-4">
+        <div className="text-gray-600 text-lg">No se encontró información de perfil.</div>
+        <button
+          onClick={() => signOut()}
+          className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+        >
+          Cerrar Sesión
+        </button>
       </div>
     );
   }
