@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
-import { ChevronLeft, ChevronRight, Lock } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Lock, Share2, X, Copy } from 'lucide-react';
 
 const FROG_STAGES = [
   { stage: 0, image: '/cria tu rana/huevo.png', name: 'Huevo' },
@@ -15,6 +15,7 @@ export default function FrogTab() {
   const { profile, refreshProfile } = useAuth();
   const [loading, setLoading] = useState(true);
   const [viewingStage, setViewingStage] = useState(0);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   useEffect(() => {
     checkFrogStatus();
@@ -81,6 +82,37 @@ export default function FrogTab() {
     }
   };
 
+  const handleShare = (platform: string) => {
+    const currentStage = FROG_STAGES[viewingStage] || FROG_STAGES[0];
+    const text = `¡Mi rana en Jilatanaka Tech ha crecido! Ahora está en la etapa: ${currentStage.name}. ¡Ven a cuidar la tuya! 🐸✨`;
+    const url = window.location.origin;
+
+    let shareUrl = '';
+
+    switch (platform) {
+      case 'whatsapp':
+        shareUrl = `https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`;
+        break;
+      case 'twitter':
+        shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+        break;
+      case 'facebook':
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+        break;
+      case 'linkedin':
+        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+        break;
+      case 'copy':
+        navigator.clipboard.writeText(`${text} ${url}`);
+        alert('Enlace copiado al portapapeles');
+        return;
+    }
+
+    if (shareUrl) {
+      window.open(shareUrl, '_blank', 'width=600,height=400');
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -102,7 +134,7 @@ export default function FrogTab() {
   };
 
   return (
-    <div className="h-full flex flex-col bg-gradient-to-b from-blue-100 to-green-100 p-6 overflow-auto">
+    <div className="h-full flex flex-col bg-gradient-to-b from-blue-100 to-green-100 p-6 overflow-auto relative">
       <div className="max-w-md mx-auto w-full bg-white rounded-3xl shadow-xl overflow-hidden">
         <div className="p-6 text-center">
           <h1 className="text-3xl font-bold text-green-800 mb-2">Cria tu Rana</h1>
@@ -158,8 +190,89 @@ export default function FrogTab() {
               />
             ))}
           </div>
+
+          {!isLocked && (
+            <button
+              onClick={() => setShowShareModal(true)}
+              className="mt-6 flex items-center justify-center space-x-2 w-full py-3 bg-blue-500 text-white rounded-xl font-bold hover:bg-blue-600 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            >
+              <Share2 size={20} />
+              <span>Compartir Progreso</span>
+            </button>
+          )}
         </div>
       </div>
+
+      {/* Share Modal */}
+      {showShareModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl transform transition-all scale-100 animate-in zoom-in-95 duration-200">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-gray-800">Compartir Logro</h3>
+              <button
+                onClick={() => setShowShareModal(false)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X size={24} className="text-gray-500" />
+              </button>
+            </div>
+
+            <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl p-6 mb-6 text-center border border-green-100">
+              <img
+                src={currentStageInfo.image}
+                alt={currentStageInfo.name}
+                className="w-32 h-32 object-contain mx-auto mb-4 drop-shadow-lg"
+              />
+              <p className="font-bold text-green-800 text-lg mb-1">¡Mi rana está creciendo!</p>
+              <p className="text-gray-600">Etapa actual: {currentStageInfo.name}</p>
+            </div>
+
+            <div className="grid grid-cols-4 gap-4">
+              <button
+                onClick={() => handleShare('whatsapp')}
+                className="flex flex-col items-center gap-2 group"
+              >
+                <div className="w-12 h-12 bg-[#25D366] rounded-full flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
+                  <Share2 size={20} />
+                </div>
+                <span className="text-xs font-medium text-gray-600">WhatsApp</span>
+              </button>
+
+              <button
+                onClick={() => handleShare('twitter')}
+                className="flex flex-col items-center gap-2 group"
+              >
+                <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                  </svg>
+                </div>
+                <span className="text-xs font-medium text-gray-600">X</span>
+              </button>
+
+              <button
+                onClick={() => handleShare('facebook')}
+                className="flex flex-col items-center gap-2 group"
+              >
+                <div className="w-12 h-12 bg-[#1877F2] rounded-full flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
+                  <Share2 size={20} />
+                </div>
+                <span className="text-xs font-medium text-gray-600">Facebook</span>
+              </button>
+
+              <button
+                onClick={() => handleShare('copy')}
+                className="flex flex-col items-center gap-2 group"
+              >
+                <div className="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
+                  <Copy size={20} />
+                </div>
+                <span className="text-xs font-medium text-gray-600">Copiar</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -65,10 +65,24 @@ const DESAGUADERO_SUBLEVELS = [
 ];
 
 const YUNGUYO_SUBLEVELS = [
-  { name: "Nivel A", position: [-16.246933, -69.088267] as [number, number], icon: "Zap" },
-  { name: "Nivel B", position: [-16.243292, -69.089515] as [number, number], icon: "Flag" },
-  { name: "Nivel C", position: [-16.244309, -69.092672] as [number, number], icon: "Target" },
-  { name: "Nivel D", position: [-16.246979, -69.094423] as [number, number], icon: "Trophy" }
+  { name: "Preguntas Comunes", position: [-16.246933, -69.088267] as [number, number], icon: "MessageCircle" },
+  { name: "Ordenes", position: [-16.243292, -69.089515] as [number, number], icon: "Megaphone" },
+  { name: "Numeros", position: [-16.244309, -69.092672] as [number, number], icon: "Hash" },
+  { name: "Repaso", position: [-16.246979, -69.094423] as [number, number], icon: "RotateCcw" }
+];
+
+const JULI_SUBLEVELS = [
+  { name: "Objetos", position: [-16.216, -69.462] as [number, number], icon: "Box" },
+  { name: "Direcciones", position: [-16.214, -69.458] as [number, number], icon: "Compass" },
+  { name: "Personas y Pronombres", position: [-16.217, -69.459] as [number, number], icon: "Users" },
+  { name: "Repaso", position: [-16.215, -69.463] as [number, number], icon: "RotateCcw" }
+];
+
+const ILAVE_SUBLEVELS = [
+  { name: "Familia", position: [-16.088, -69.640] as [number, number], icon: "Users" },
+  { name: "Partes del Cuerpo", position: [-16.086, -69.636] as [number, number], icon: "User" },
+  { name: "Verbos Basicos", position: [-16.089, -69.637] as [number, number], icon: "Activity" },
+  { name: "Repaso", position: [-16.087, -69.641] as [number, number], icon: "RotateCcw" }
 ];
 
 function FlyToBounds({ bounds }: { bounds: L.LatLngBoundsExpression | null }) {
@@ -99,12 +113,26 @@ export default function LearnTab() {
   const [targetBounds, setTargetBounds] = useState<L.LatLngBoundsExpression | null>(null);
   const [isDesaguaderoExpanded, setIsDesaguaderoExpanded] = useState(false);
   const [isYunguyoExpanded, setIsYunguyoExpanded] = useState(false);
+  const [isJuliExpanded, setIsJuliExpanded] = useState(false);
+  const [isIlaveExpanded, setIsIlaveExpanded] = useState(false);
   const [showCulturaCard, setShowCulturaCard] = useState(true);
   const [activeLesson, setActiveLesson] = useState<string | null>(null);
+  const [subLevelProgress, setSubLevelProgress] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (profile) {
+      const newProgress: Record<string, boolean> = {};
+      const allSubLevels = [...DESAGUADERO_SUBLEVELS, ...YUNGUYO_SUBLEVELS, ...JULI_SUBLEVELS, ...ILAVE_SUBLEVELS];
+      allSubLevels.forEach(sl => {
+        newProgress[sl.name] = localStorage.getItem(`progress_${profile.id}_${sl.name}`) === 'true';
+      });
+      setSubLevelProgress(newProgress);
+    }
+  }, [profile]);
 
   const fetchData = async () => {
     try {
@@ -218,6 +246,20 @@ export default function LearnTab() {
     return true; // Temporarily unlocked for testing
   };
 
+  const isSubLevelUnlocked = (subLevelName: string, section: string, index: number, subLevels: any[]) => {
+    if (section === 'Desaguadero Marka') {
+      if (['Saludos', 'Colores', 'Bonus'].includes(subLevelName)) return true;
+      if (subLevelName === 'Animales') return subLevelProgress['Colores'];
+      if (subLevelName === 'Repaso') return subLevelProgress['Animales'];
+    } else {
+      // Generic sequential locking for other sections
+      if (index === 0) return true;
+      const prevLevel = subLevels[index - 1];
+      return subLevelProgress[prevLevel.name];
+    }
+    return false;
+  };
+
   const getLessonIcon = (iconName: string) => {
     const Icon = (LucideIcons as any)[
       iconName.charAt(0).toUpperCase() + iconName.slice(1)
@@ -234,16 +276,21 @@ export default function LearnTab() {
       red: '#ef4444',
       purple: '#a855f7',
       yellow: '#eab308',
-      gray: '#9ca3af'
+      gray: '#9ca3af',
+      orange: '#f97316',
+      pink: '#ec4899'
     };
 
     const bgColor = isCompleted ? colorMap['yellow'] : (isUnlocked ? (colorMap[color] || colorMap['blue']) : colorMap['gray']);
+
+    const isDesaguadero = title === 'Desaguadero Marka';
+    const borderClass = isDesaguadero ? 'border-4 border-yellow-400 ring-4 ring-yellow-400/30' : 'border-4 border-white';
 
     const iconMarkup = renderToStaticMarkup(
       <div className="relative flex flex-col items-center justify-center">
         <div
           style={{ backgroundColor: bgColor }}
-          className={`w-16 h-16 rounded-full shadow-xl flex items-center justify-center border-4 border-white transition-transform hover:scale-110 ${!isUnlocked ? 'opacity-75' : ''} overflow-hidden`}
+          className={`w-16 h-16 rounded-full shadow-xl flex items-center justify-center ${borderClass} transition-transform hover:scale-110 ${!isUnlocked ? 'opacity-75' : ''} overflow-hidden`}
         >
           {(() => {
             const SECTION_ICONS: Record<string, string> = {
@@ -310,6 +357,12 @@ export default function LearnTab() {
           lessonTitle={activeLesson}
           onComplete={(score) => {
             console.log(`Lesson ${activeLesson} completed with score ${score}`);
+
+            if (profile && activeLesson) {
+              localStorage.setItem(`progress_${profile.id}_${activeLesson}`, 'true');
+              setSubLevelProgress(prev => ({ ...prev, [activeLesson]: true }));
+            }
+
             setActiveLesson(null);
             // Here you would update the backend progress
           }}
@@ -317,11 +370,13 @@ export default function LearnTab() {
         />
       )}
 
-      {(isDesaguaderoExpanded || isYunguyoExpanded) && (
+      {(isDesaguaderoExpanded || isYunguyoExpanded || isJuliExpanded || isIlaveExpanded) && (
         <button
           onClick={() => {
             setIsDesaguaderoExpanded(false);
             setIsYunguyoExpanded(false);
+            setIsJuliExpanded(false);
+            setIsIlaveExpanded(false);
             setTargetBounds(mapBounds);
           }}
           className="absolute top-6 left-6 bg-white p-3 rounded-full shadow-lg z-[1000] hover:bg-gray-100 transition-colors"
@@ -365,6 +420,19 @@ export default function LearnTab() {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
 
+          {/* Main Path connecting Markas */}
+          <Polyline
+            positions={[
+              [-16.56652, -69.03727], // Desaguadero
+              [-16.2463, -69.09132],  // Yunguyo
+              [-16.21550, -69.46046], // Juli
+              [-16.08763, -69.63864], // Ilave
+              [-15.894558, -69.889923], // Chucuito
+              [-15.45794, -69.43709]  // Conima
+            ]}
+            pathOptions={{ color: '#a855f7', weight: 6, opacity: 0.8, lineCap: 'round', dashArray: '15, 15' }}
+          />
+
           {/* Main Level Markers */}
           {lessons.map((lesson, idx) => {
             const coordinate = LEVEL_COORDINATES[idx];
@@ -374,11 +442,20 @@ export default function LearnTab() {
             if (idx === 0 && isDesaguaderoExpanded) return null;
             // Hide Yunguyo Marka if expanded
             if (idx === 3 && isYunguyoExpanded) return null;
+            // Hide Juli Marka if expanded
+            if (idx === 1 && isJuliExpanded) return null;
+            // Hide Ilave Marka if expanded
+            if (idx === 2 && isIlaveExpanded) return null;
 
             const lessonProgress = progress.find((p) => p.lesson_id === lesson.id);
             const isUnlocked = isLessonUnlocked(lesson);
             const isCompleted = lessonProgress?.completed || false;
-            const stars = lessonProgress?.stars || 0;
+
+            // Hide stars for Ilave and Yunguyo as requested
+            let stars = lessonProgress?.stars || 0;
+            if (lesson.title === 'Ilave Marka' || lesson.title === 'Yunguyo Marka') {
+              stars = 0;
+            }
 
             return (
               <Marker
@@ -393,10 +470,10 @@ export default function LearnTab() {
                         setIsDesaguaderoExpanded(true);
                       } else if (idx === 1) { // Juli Marka
                         setTargetBounds(NUMEROS_BOUNDS);
-                        setTimeout(() => handleLessonClick(lesson), 2000);
+                        setIsJuliExpanded(true);
                       } else if (idx === 2) { // Ilave Marka
                         setTargetBounds(COLORES_BOUNDS);
-                        setTimeout(() => handleLessonClick(lesson), 2000);
+                        setIsIlaveExpanded(true);
                       } else if (idx === 3) { // Yunguyo Marka
                         setTargetBounds(FAMILIA_BOUNDS);
                         setIsYunguyoExpanded(true);
@@ -415,26 +492,39 @@ export default function LearnTab() {
           {/* Desaguadero Sub-levels */}
           {isDesaguaderoExpanded && (
             <>
-              {DESAGUADERO_SUBLEVELS.map((subLevel, idx) => (
-                <Marker
-                  key={`sub-${idx}`}
-                  position={subLevel.position}
-                  icon={createCustomMarkerIcon(subLevel.name, subLevel.icon, true, false, 0, 'green')}
-                  eventHandlers={{
-                    click: () => {
-                      if (subLevel.name === 'Saludos') {
-                        setActiveLesson('Saludos');
-                      } else if (subLevel.name === 'Colores') {
-                        setActiveLesson('Colores');
-                      } else if (subLevel.name === 'Bonus') {
-                        setActiveLesson('Bonus');
-                      } else {
-                        alert(`Has seleccionado el nivel: ${subLevel.name}`);
+              {DESAGUADERO_SUBLEVELS.map((subLevel, idx) => {
+                const isUnlocked = isSubLevelUnlocked(subLevel.name, 'Desaguadero Marka', idx, DESAGUADERO_SUBLEVELS);
+                const isCompleted = subLevelProgress[subLevel.name] || false;
+
+                return (
+                  <Marker
+                    key={`sub-${idx}`}
+                    position={subLevel.position}
+                    icon={createCustomMarkerIcon(subLevel.name, subLevel.icon, isUnlocked, isCompleted, 0, 'green')}
+                    eventHandlers={{
+                      click: () => {
+                        if (!isUnlocked) {
+                          alert("¡Nivel bloqueado! Completa el anterior.");
+                          return;
+                        }
+                        if (subLevel.name === 'Saludos') {
+                          setActiveLesson('Saludos');
+                        } else if (subLevel.name === 'Colores') {
+                          setActiveLesson('Colores');
+                        } else if (subLevel.name === 'Bonus') {
+                          setActiveLesson('Bonus');
+                        } else if (subLevel.name === 'Animales') {
+                          setActiveLesson('Animales');
+                        } else {
+                          alert(`Has seleccionado el nivel: ${subLevel.name}`);
+                          // Simulate completion for testing if no lesson view exists
+                          // setActiveLesson(subLevel.name); 
+                        }
                       }
-                    }
-                  }}
-                />
-              ))}
+                    }}
+                  />
+                )
+              })}
               <Polyline
                 positions={DESAGUADERO_SUBLEVELS.slice(0, 4).map(l => l.position)}
                 pathOptions={{ color: '#a855f7', weight: 4, dashArray: '10, 10', opacity: 0.8 }}
@@ -445,21 +535,94 @@ export default function LearnTab() {
           {/* Yunguyo Sub-levels */}
           {isYunguyoExpanded && (
             <>
-              {YUNGUYO_SUBLEVELS.map((subLevel, idx) => (
-                <Marker
-                  key={`yunguyo-sub-${idx}`}
-                  position={subLevel.position}
-                  icon={createCustomMarkerIcon(subLevel.name, subLevel.icon, true, false, 0, 'purple')}
-                  eventHandlers={{
-                    click: () => {
-                      alert(`Has seleccionado el nivel: ${subLevel.name}`);
-                    }
-                  }}
-                />
-              ))}
+              {YUNGUYO_SUBLEVELS.map((subLevel, idx) => {
+                const isUnlocked = isSubLevelUnlocked(subLevel.name, 'Yunguyo Marka', idx, YUNGUYO_SUBLEVELS);
+                const isCompleted = subLevelProgress[subLevel.name] || false;
+
+                return (
+                  <Marker
+                    key={`yunguyo-sub-${idx}`}
+                    position={subLevel.position}
+                    icon={createCustomMarkerIcon(subLevel.name, subLevel.icon, isUnlocked, isCompleted, 0, 'purple')}
+                    eventHandlers={{
+                      click: () => {
+                        if (!isUnlocked) {
+                          alert("¡Nivel bloqueado! Completa el anterior.");
+                          return;
+                        }
+                        alert(`Has seleccionado el nivel: ${subLevel.name}`);
+                        // Simulate completion for now as we don't have lessons for these
+                        // In real app, setActiveLesson(subLevel.name);
+                      }
+                    }}
+                  />
+                )
+              })}
               <Polyline
                 positions={YUNGUYO_SUBLEVELS.map(l => l.position)}
                 pathOptions={{ color: '#a855f7', weight: 5, dashArray: '10, 10', opacity: 0.8 }}
+              />
+            </>
+          )}
+
+          {/* Juli Sub-levels */}
+          {isJuliExpanded && (
+            <>
+              {JULI_SUBLEVELS.map((subLevel, idx) => {
+                const isUnlocked = isSubLevelUnlocked(subLevel.name, 'Juli Marka', idx, JULI_SUBLEVELS);
+                const isCompleted = subLevelProgress[subLevel.name] || false;
+
+                return (
+                  <Marker
+                    key={`juli-sub-${idx}`}
+                    position={subLevel.position}
+                    icon={createCustomMarkerIcon(subLevel.name, subLevel.icon, isUnlocked, isCompleted, 0, 'orange')}
+                    eventHandlers={{
+                      click: () => {
+                        if (!isUnlocked) {
+                          alert("¡Nivel bloqueado! Completa el anterior.");
+                          return;
+                        }
+                        alert(`Has seleccionado el nivel: ${subLevel.name}`);
+                      }
+                    }}
+                  />
+                )
+              })}
+              <Polyline
+                positions={JULI_SUBLEVELS.map(l => l.position)}
+                pathOptions={{ color: '#f97316', weight: 5, dashArray: '10, 10', opacity: 0.8 }}
+              />
+            </>
+          )}
+
+          {/* Ilave Sub-levels */}
+          {isIlaveExpanded && (
+            <>
+              {ILAVE_SUBLEVELS.map((subLevel, idx) => {
+                const isUnlocked = isSubLevelUnlocked(subLevel.name, 'Ilave Marka', idx, ILAVE_SUBLEVELS);
+                const isCompleted = subLevelProgress[subLevel.name] || false;
+
+                return (
+                  <Marker
+                    key={`ilave-sub-${idx}`}
+                    position={subLevel.position}
+                    icon={createCustomMarkerIcon(subLevel.name, subLevel.icon, isUnlocked, isCompleted, 0, 'pink')}
+                    eventHandlers={{
+                      click: () => {
+                        if (!isUnlocked) {
+                          alert("¡Nivel bloqueado! Completa el anterior.");
+                          return;
+                        }
+                        alert(`Has seleccionado el nivel: ${subLevel.name}`);
+                      }
+                    }}
+                  />
+                )
+              })}
+              <Polyline
+                positions={ILAVE_SUBLEVELS.map(l => l.position)}
+                pathOptions={{ color: '#ec4899', weight: 5, dashArray: '10, 10', opacity: 0.8 }}
               />
             </>
           )}

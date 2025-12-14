@@ -28,33 +28,51 @@ export default function TaboTab() {
 
   const fetchQuestions = async () => {
     try {
-      const { data, error } = await supabase
-        .from('quiz_questions')
-        .select('*')
-
-        .limit(5);
-
-      if (error) throw error;
+      // Hardcoded questions as requested
       const newQuestions: QuizQuestion[] = [
         {
-          id: 'custom-1',
-          question: '¿Qué danza emblemática de Puno representa la lucha entre el bien y el mal, y es protagonizada por el Arcángel San Miguel enfrentándose a una legión de demonios?',
-          option_a: 'La Morenada',
-          option_b: 'La Diablada',
-          option_c: 'Los Caporales',
+          id: 'aymara-1',
+          question: '¿En qué región de América del Sur se encuentra predominantemente la cultura Aymara?',
+          option_a: 'Cuenca del Amazonas',
+          option_b: 'Altiplano Andino (Perú, Bolivia, Chile y Argentina)',
+          option_c: 'Pampas Argentinas',
           correct_answer: 'B'
         },
         {
-          id: 'custom-2',
-          question: 'Además de los Uros, ¿qué isla del Lago Titicaca es mundialmente famosa por su fino arte textil, el cual fue proclamado como "Obra Maestra del Patrimonio Oral e Inmaterial de la Humanidad" por la UNESCO?',
-          option_a: 'Isla Amantaní',
-          option_b: 'Isla del Sol',
-          option_c: 'Isla Taquile',
+          id: 'aymara-2',
+          question: '¿Cómo se llama la deidad o figura central andina, considerada el "Padre Sol" por los pueblos Aymara y Quechua?',
+          option_a: 'Pachamama',
+          option_b: 'Illapa',
+          option_c: 'Inti',
           correct_answer: 'C'
+        },
+        {
+          id: 'aymara-3',
+          question: '¿Cuál es el idioma nativo predominante hablado por el pueblo Aymara?',
+          option_a: 'Quechua',
+          option_b: 'Aymara (Aymar aru)',
+          option_c: 'Puquina',
+          correct_answer: 'B'
+        },
+        {
+          id: 'aymara-4',
+          question: '¿Qué concepto central en la cosmovisión Aymara se refiere a la reciprocidad, el apoyo mutuo y el trabajo comunitario, siendo fundamental en su estructura social?',
+          option_a: 'Mita',
+          option_b: 'Suyu',
+          option_c: 'Ayni',
+          correct_answer: 'C'
+        },
+        {
+          id: 'aymara-5',
+          question: '¿Cuál es la bandera multicolor reconocida como el símbolo de los pueblos andinos (incluyendo aymaras y quechuas) y que representa a la Tawantinsuyu (Imperio Inca)?',
+          option_a: 'Bandera de Bolivia',
+          option_b: 'Wiphala',
+          option_c: 'Chacana',
+          correct_answer: 'B'
         }
       ];
 
-      setQuestions([...(data || []), ...newQuestions]);
+      setQuestions(newQuestions);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching questions:', error);
