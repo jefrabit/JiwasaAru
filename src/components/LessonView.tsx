@@ -384,30 +384,44 @@ export default function LessonView({ lessonTitle, onComplete, onClose }: LessonV
                             <h3 className="text-2xl font-bold text-center mb-6">¡Comparte tu logro!</h3>
 
                             {/* Share Card Preview */}
+                            {/* Share Card Preview */}
                             <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl p-6 mb-6 text-white shadow-lg transform rotate-1 hover:rotate-0 transition-transform duration-300 relative overflow-hidden">
-                                {userPhoto && (
-                                    <div className="absolute inset-0 z-0 opacity-30">
-                                        <img src={userPhoto} alt="User" className="w-full h-full object-cover" />
-                                    </div>
-                                )}
-                                <div className="relative z-10">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <span className="font-bold text-lg opacity-90">Jiwasa Aru</span>
-                                        <div className="bg-white/20 p-1.5 rounded-lg">
-                                            <Share2 className="w-4 h-4 text-white" />
+                                <div className="flex flex-row items-center gap-4">
+                                    {/* Left Column: Text */}
+                                    <div className="flex-1 z-10">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <span className="font-bold text-lg opacity-90">Jiwasa Aru</span>
+                                            <div className="bg-white/20 p-1.5 rounded-lg">
+                                                <Share2 className="w-4 h-4 text-white" />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <p className="text-indigo-100 text-sm font-medium">¡Lección Completada!</p>
+                                            <p className="text-xl font-bold leading-tight">
+                                                Soy {profile?.username || 'un estudiante'} y he completado {lessonTitle}
+                                            </p>
+                                        </div>
+                                        <div className="mt-4 flex items-center space-x-2 text-xs text-indigo-200">
+                                            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                                            <span>Aymara Learning</span>
                                         </div>
                                     </div>
-                                    <div className="space-y-2">
-                                        <p className="text-indigo-100 text-sm font-medium">¡Lección Completada!</p>
-                                        <p className="text-xl font-bold leading-tight">
-                                            Soy {profile?.username || 'un estudiante'} y he completado {lessonTitle}
-                                        </p>
-                                    </div>
-                                    <div className="mt-4 flex items-center space-x-2 text-xs text-indigo-200">
-                                        <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                                        <span>Aymara Learning</span>
-                                    </div>
+
+                                    {/* Right Column: Photo */}
+                                    {userPhoto && (
+                                        <div className="w-32 h-32 shrink-0 z-10">
+                                            <img
+                                                src={userPhoto}
+                                                alt="User"
+                                                className="w-full h-full object-cover rounded-lg border-2 border-white/30 shadow-sm"
+                                            />
+                                        </div>
+                                    )}
                                 </div>
+
+                                {/* Decorative background elements */}
+                                <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+                                <div className="absolute bottom-0 left-0 -mb-4 -ml-4 w-20 h-20 bg-blue-500/20 rounded-full blur-xl pointer-events-none"></div>
                             </div>
 
                             {/* Photo Actions */}
