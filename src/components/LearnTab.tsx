@@ -347,10 +347,11 @@ export default function LearnTab() {
 
       <div className="flex-1 w-full h-full relative z-0 border-8 border-white rounded-3xl overflow-hidden">
         <MapContainer
-          bounds={mapBounds}
-          style={{ height: '100%', width: '100%' }}
-          scrollWheelZoom={true}
+          bounds={[[-16.686, -70.145], [-15.236, -68.879]]}
+          maxBounds={[[-16.686, -70.145], [-15.236, -68.879]]}
+          className="w-full h-full"
           zoomControl={false}
+          minZoom={8}
         >
           <FlyToBounds bounds={targetBounds} />
           <TileLayer
