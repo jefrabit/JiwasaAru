@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase, Lesson, UserProgress } from '../lib/supabase';
-import { Heart, Lock, ArrowLeft } from 'lucide-react';
+import { Lock, ArrowLeft } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { MapContainer, TileLayer, Marker, useMap, Polyline } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -302,8 +302,16 @@ export default function LearnTab() {
       )}
 
       <div className="absolute top-6 right-6 bg-white rounded-2xl shadow-lg px-6 py-4 flex items-center space-x-3 z-[1000]">
-        <Heart className="w-6 h-6 text-red-500 fill-red-500" />
-        <span className="text-2xl font-bold text-gray-800">{profile?.lives || 0}</span>
+        <div className="flex items-center space-x-1">
+          {[...Array(profile?.lives ?? 0)].map((_, i) => (
+            <img
+              key={i}
+              src="/sancallos/sancayoConRelleno.png"
+              alt="Life"
+              className="w-8 h-8 object-contain"
+            />
+          ))}
+        </div>
       </div>
 
       <div className="flex-1 w-full h-full relative z-0 border-8 border-white rounded-3xl overflow-hidden">

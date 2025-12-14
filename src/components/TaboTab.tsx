@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
-import { Heart, Check, X, Trophy } from 'lucide-react';
+import { Check, X, Trophy } from 'lucide-react';
 
 type QuizQuestion = {
   id: string;
@@ -122,9 +122,16 @@ export default function TaboTab() {
           <h1 className="text-4xl font-bold text-gray-800 mb-4">¡Cuestionario Completo!</h1>
           <div className="bg-gradient-to-r from-green-100 to-blue-100 rounded-xl p-6 mb-6">
             <p className="text-gray-600 text-sm mb-2">Vidas Recuperadas</p>
-            <div className="flex items-center justify-center space-x-2">
-              <Heart className="w-8 h-8 text-red-500 fill-red-500" />
-              <span className="text-5xl font-bold text-gray-800">+{livesRecovered}</span>
+            <div className="flex items-center justify-center space-x-1">
+              {[...Array(livesRecovered)].map((_, i) => (
+                <img
+                  key={i}
+                  src="/sancallos/sancayoConRelleno.png"
+                  alt="Recovered Life"
+                  className="w-8 h-8 object-contain"
+                />
+              ))}
+              <span className="text-5xl font-bold text-gray-800 ml-2">+{livesRecovered}</span>
             </div>
           </div>
 
@@ -189,9 +196,15 @@ export default function TaboTab() {
               <span className="text-sm font-semibold text-gray-600">
                 Pregunta {currentQuestionIndex + 1} de {questions.length}
               </span>
-              <div className="flex items-center space-x-2 bg-red-100 px-4 py-2 rounded-full">
-                <Heart className="w-5 h-5 text-red-500 fill-red-500" />
-                <span className="font-bold text-gray-800">{profile?.lives || 0}</span>
+              <div className="flex items-center space-x-1 bg-white/50 px-4 py-2 rounded-full">
+                {[...Array(profile?.lives ?? 0)].map((_, i) => (
+                  <img
+                    key={i}
+                    src="/sancallos/sancayoConRelleno.png"
+                    alt="Life"
+                    className="w-6 h-6 object-contain"
+                  />
+                ))}
               </div>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
@@ -252,9 +265,16 @@ export default function TaboTab() {
 
           <div className="bg-gradient-to-r from-yellow-100 to-green-100 rounded-xl p-4 text-center">
             <p className="text-sm text-gray-600">Vidas Recuperadas en este Cuestionario</p>
-            <div className="flex items-center justify-center space-x-2 mt-2">
-              <Heart className="w-5 h-5 text-red-500 fill-red-500" />
-              <span className="text-3xl font-bold text-gray-800">+{livesRecovered}</span>
+            <div className="flex items-center justify-center space-x-1 mt-2">
+              {[...Array(livesRecovered)].map((_, i) => (
+                <img
+                  key={i}
+                  src="/sancallos/sancayoConRelleno.png"
+                  alt="Recovered Life"
+                  className="w-6 h-6 object-contain"
+                />
+              ))}
+              <span className="text-3xl font-bold text-gray-800 ml-2">+{livesRecovered}</span>
             </div>
           </div>
         </div>

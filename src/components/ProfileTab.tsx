@@ -72,7 +72,16 @@ export default function ProfileTab() {
                   </div>
                   <span className="text-sm font-medium text-gray-600">Vidas</span>
                 </div>
-                <div className="text-3xl font-bold text-gray-800">{profile.lives} / 5</div>
+                <div className="flex items-center space-x-1 mt-2">
+                  {[...Array(profile?.lives ?? 0)].map((_, i) => (
+                    <img
+                      key={i}
+                      src="/sancallos/sancayoConRelleno.png"
+                      alt="Life"
+                      className="w-8 h-8 object-contain"
+                    />
+                  ))}
+                </div>
               </div>
             </div>
 
