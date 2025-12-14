@@ -53,7 +53,7 @@ export default function Layout() {
             </div>
             {!isCollapsed && (
               <h1 className="text-xl font-bold text-gray-800 whitespace-nowrap overflow-hidden">
-                LanguageLearn
+                Jiwasa Aru
               </h1>
             )}
           </div>

@@ -41,7 +41,7 @@ export default function Auth() {
           <div className="bg-green-500 p-4 rounded-full mb-4">
             <BookOpen className="w-12 h-12 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-800">LanguageLearn</h1>
+          <h1 className="text-3xl font-bold text-gray-800">Jiwasa Aru</h1>
           <p className="text-gray-600 mt-2">Aprende idiomas de forma divertida</p>
         </div>
 
