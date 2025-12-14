@@ -27,20 +27,20 @@ export const SALUDOS_QUESTIONS: Question[] = [
     {
         id: 1,
         type: 'multiple-choice',
-        question: '¿Cómo se responde a "Kamisaraki"?',
-        options: ['Waliki', 'Janiwa', 'Ukaru', 'Ch\'ama'],
+        question: '¿Cuál es la respuesta correcta si alguien te dice "Kamisaraki"?',
+        options: ['Jikisiñkama', 'Waliki', 'Kullaka', 'Uta'],
         correctAnswer: 'Waliki'
     },
     {
         id: 2,
         type: 'text-input',
-        question: 'Escribe "Hasta el encuentro" en aymara:',
+        question: 'Para despedirte diciendo "Hasta el encuentro", escribes:',
         correctAnswer: 'Jikisiñkama'
     },
     {
         id: 3,
         type: 'matching',
-        question: 'Relaciona las palabras:',
+        question: 'Une la expresión con su significado:',
         pairs: [
             { left: 'Kamisaraki', right: '¿Cómo estás?' },
             { left: 'Waliki', right: 'Bien' },
@@ -51,9 +51,9 @@ export const SALUDOS_QUESTIONS: Question[] = [
     {
         id: 4,
         type: 'multiple-choice',
-        question: '¿Qué significa "Jilata"?',
-        options: ['Hermana', 'Hermano', 'Amigo', 'Padre'],
-        correctAnswer: 'Hermano'
+        question: '¿Qué palabra se usa para dirigirse con respeto a un "hermano" al saludar?',
+        options: ['Jilata', 'Tayka', 'Uta', 'Pankara'],
+        correctAnswer: 'Jilata'
     },
     {
         id: 5,
@@ -66,13 +66,6 @@ export const SALUDOS_QUESTIONS: Question[] = [
             { id: 'c3', text: 'Jikisiñkama', category: 'Despedidas' },
             { id: 'c4', text: 'Qharurkama', category: 'Despedidas' }
         ]
-    },
-    {
-        id: 6,
-        type: 'multiple-choice',
-        question: '¿Qué color es "Ch\'iyara"?',
-        options: ['Blanco', 'Negro', 'Rojo', 'Verde'],
-        correctAnswer: 'Negro'
     }
 ];
 
