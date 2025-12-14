@@ -241,9 +241,15 @@ export default function LearnTab() {
       <div className="relative flex flex-col items-center justify-center">
         <div
           style={{ backgroundColor: bgColor }}
-          className={`w-16 h-16 rounded-full shadow-xl flex items-center justify-center border-4 border-white transition-transform hover:scale-110 ${!isUnlocked ? 'opacity-75' : ''}`}
+          className={`w-16 h-16 rounded-full shadow-xl flex items-center justify-center border-4 border-white transition-transform hover:scale-110 ${!isUnlocked ? 'opacity-75' : ''} overflow-hidden`}
         >
-          {isUnlocked ? (
+          {title === 'Ilave Marka' ? (
+            <img
+              src="/ilave-marka.jpeg"
+              alt="Ilave Marka"
+              className="w-full h-full object-cover"
+            />
+          ) : isUnlocked ? (
             <Icon size={32} color="white" />
           ) : (
             <Lock size={32} color="white" />
