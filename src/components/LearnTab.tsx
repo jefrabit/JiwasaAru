@@ -243,17 +243,34 @@ export default function LearnTab() {
           style={{ backgroundColor: bgColor }}
           className={`w-16 h-16 rounded-full shadow-xl flex items-center justify-center border-4 border-white transition-transform hover:scale-110 ${!isUnlocked ? 'opacity-75' : ''} overflow-hidden`}
         >
-          {title === 'Ilave Marka' ? (
-            <img
-              src="/ilave-marka.jpeg"
-              alt="Ilave Marka"
-              className="w-full h-full object-cover"
-            />
-          ) : isUnlocked ? (
-            <Icon size={32} color="white" />
-          ) : (
-            <Lock size={32} color="white" />
-          )}
+          {(() => {
+            const SECTION_ICONS: Record<string, string> = {
+              'Conima Marka': '/iconos/ConimaIcono.png',
+              'Chucuito Marka': '/iconos/ChucuitoIcono.png',
+              'Juli Marka': '/iconos/Juli_Icono.png',
+              'Yunguyo Marka': '/iconos/YunguyoIcono.png',
+              'Desaguadero Marka': '/iconos/DesaguaderoIcono.png',
+              'Ilave Marka': '/ilave-marka.jpeg'
+            };
+
+            const iconPath = SECTION_ICONS[title];
+
+            if (iconPath) {
+              return (
+                <img
+                  src={iconPath}
+                  alt={title}
+                  className="w-full h-full object-cover"
+                />
+              );
+            }
+
+            return isUnlocked ? (
+              <Icon size={32} color="white" />
+            ) : (
+              <Lock size={32} color="white" />
+            );
+          })()}
         </div>
         {isCompleted && (
           <div className="flex mt-1 space-x-0.5 bg-white/80 rounded-full px-2 py-0.5 shadow-sm">
