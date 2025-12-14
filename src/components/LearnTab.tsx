@@ -87,6 +87,7 @@ function FlyToBounds({ bounds }: { bounds: L.LatLngBoundsExpression | null }) {
 }
 
 import CulturaVivaCard from './CulturaVivaCard';
+import YunguyoCard from './YunguyoCard';
 
 // ... (existing imports)
 
@@ -331,6 +332,10 @@ export default function LearnTab() {
 
       {isDesaguaderoExpanded && showCulturaCard && (
         <CulturaVivaCard onClose={() => setShowCulturaCard(false)} />
+      )}
+
+      {isYunguyoExpanded && showCulturaCard && (
+        <YunguyoCard onClose={() => setShowCulturaCard(false)} />
       )}
 
       <div className="absolute top-6 right-6 bg-white rounded-2xl shadow-lg px-6 py-4 flex items-center space-x-3 z-[1000]">

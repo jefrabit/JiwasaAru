@@ -17,6 +17,13 @@ export default function CulturaVivaCard({ onClose }: CulturaVivaCardProps) {
             </div>
 
             <div className="p-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
+                <div className="rounded-xl overflow-hidden mb-4 h-40 w-full shadow-md">
+                    <img
+                        src="/desaguadero-teck/desaguadero.jpg"
+                        alt="Desaguadero"
+                        className="w-full h-full object-cover"
+                    />
+                </div>
                 <p className="text-xs text-gray-600 mb-4 leading-relaxed">
                     Desaguadero es el corazón vivo de la nación aimara, donde la frontera política se borra ante una herencia ancestral compartida por Perú y Bolivia. Antiguo paso incaico, su identidad cultural brilla en la fastuosa devoción a la Virgen de la Natividad y en una profunda espiritualidad andina que convive diariamente con el comercio.
                 </p>
