@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import RankingTab from './RankingTab';
-import { BookOpen, User, LogOut, Heart, Trophy, ChevronLeft, ChevronRight } from 'lucide-react';
+import { BookOpen, User, LogOut, Heart, Trophy, ChevronLeft, ChevronRight, Egg } from 'lucide-react';
 import LearnTab from './LearnTab';
 import ProfileTab from './ProfileTab';
 import TaboTab from './TaboTab';
+import FrogTab from './FrogTab';
 
-type Tab = 'learn' | 'tabo' | 'profile' | 'ranking';
+type Tab = 'learn' | 'tabo' | 'profile' | 'ranking' | 'frog';
 
 export default function Layout() {
   const [activeTab, setActiveTab] = useState<Tab>('learn');
@@ -28,6 +29,7 @@ export default function Layout() {
         {activeTab === 'tabo' && <TaboTab />}
         {activeTab === 'profile' && <ProfileTab />}
         {activeTab === 'ranking' && <RankingTab />}
+        {activeTab === 'frog' && <FrogTab />}
       </div>
 
       <div
@@ -103,6 +105,18 @@ export default function Layout() {
             >
               <User className="w-5 h-5 shrink-0" />
               {!isCollapsed && <span className="font-semibold whitespace-nowrap">Perfil</span>}
+            </button>
+
+            <button
+              onClick={() => setActiveTab('frog')}
+              className={`flex items-center ${isCollapsed ? 'justify-center px-2' : 'space-x-3 px-4'} py-3 rounded-lg transition duration-200 ${activeTab === 'frog'
+                ? 'bg-green-500 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              title={isCollapsed ? "Cria tu Rana" : ""}
+            >
+              <Egg className="w-5 h-5 shrink-0" />
+              {!isCollapsed && <span className="font-semibold whitespace-nowrap">Cria tu Rana</span>}
             </button>
           </div>
         </div>

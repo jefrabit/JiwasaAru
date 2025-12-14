@@ -16,6 +16,8 @@ export type Profile = {
   level: number;
   xp: number;
   current_language: string;
+  frog_stage: number;
+  last_frog_visit: string | null;
   created_at: string;
   updated_at: string;
 };
